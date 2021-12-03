@@ -14,16 +14,19 @@ namespace AdventOfCode
 
             Console.WriteLine("Zadejte den (1-24)");
             uint number = Convert.ToUInt32(Console.ReadLine());
-            if (number > 0 && number < 25)
+            if (number > 0 && number < 4)
                 day = number;
 
-            Console.WriteLine("Zadejte úkol (1 nebo 2)");
-            if (Console.ReadKey().Key == ConsoleKey.D1 || Console.ReadKey().Key == ConsoleKey.F1)
+            Console.WriteLine("Zadejte úkol (P pro první)");
+            if (Console.ReadKey().Key == ConsoleKey.P )
                 first = true;
 
+            Console.WriteLine();
             Console.WriteLine("T pro test");
-            if (Console.ReadKey().Key == ConsoleKey.D1 || Console.ReadKey().Key == ConsoleKey.F1)
+            if (Console.ReadKey().Key == ConsoleKey.T)
                 test = true;
+
+            Console.WriteLine();
 
             switch(day)
             {
@@ -46,6 +49,7 @@ namespace AdventOfCode
                         DayThreeSecond(test);
                     break;
             }
+            Console.ReadKey();
         }
         static void DayOneFirst(bool test)
         {
@@ -214,7 +218,48 @@ namespace AdventOfCode
 
         static void DayThreeFirst(bool test)
         {
+            string path = "day3.txt";
+            if (test)
+                path = "day3_test.txt";
+            StreamReader reader = new StreamReader(path);
 
+            string readLine = reader.ReadLine();
+            string gamma = "";
+            string epsilon = "";
+            List<char[]> lines = new List<char[]>();
+            while (readLine != null)
+            {
+                lines.Add(readLine.ToCharArray());
+                readLine = reader.ReadLine();
+            }
+
+            for (int i = 0; i < lines[0].Length; i++)
+            {
+                int ones = 0;
+
+                for (int j = 0; j < lines.Count; j++)
+                {
+                    if (lines[j][i] == '1')
+                        ones++;
+                }
+
+                if (ones > lines.Count/2)
+                {
+                    gamma += "1";
+                    epsilon += "0";
+                }
+                else
+                {
+                    gamma += "0";
+                    epsilon += "1";
+                }
+            }
+
+            int gammaInt = Convert.ToInt32(gamma, 2);
+            int epsilonInt = Convert.ToInt32(epsilon, 2);
+            Console.WriteLine("Gamma: " + gammaInt);
+            Console.WriteLine("Epsilon: " + epsilonInt);
+            Console.WriteLine("Spotřeba energie: " + (gammaInt * epsilonInt));
         }
 
         static void DayThreeSecond(bool test)
