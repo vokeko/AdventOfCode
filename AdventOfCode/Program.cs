@@ -11,11 +11,48 @@ namespace AdventOfCode
             bool test = false;
             uint day = 1;
             bool first = false;
-            DayOneFirst(test);
+
+            Console.WriteLine("Zadejte den (1-24)");
+            uint number = Convert.ToUInt32(Console.ReadLine());
+            if (number > 0 && number < 25)
+                day = number;
+
+            Console.WriteLine("Zadejte úkol (1 nebo 2)");
+            if (Console.ReadKey().Key == ConsoleKey.D1 || Console.ReadKey().Key == ConsoleKey.F1)
+                first = true;
+
+            Console.WriteLine("T pro test");
+            if (Console.ReadKey().Key == ConsoleKey.D1 || Console.ReadKey().Key == ConsoleKey.F1)
+                test = true;
+
+            switch(day)
+            {
+                case 1:
+                    if (first)
+                        DayOneFirst(test);
+                    else
+                        DayOneSecond(test);
+                    break;
+                case 2:
+                    if (first)
+                        DayTwoFirst(test);
+                    else
+                        DayTwoSecond(test);
+                    break;
+                case 3:
+                    if (first)
+                        DayThreeFirst(test);
+                    else
+                        DayThreeSecond(test);
+                    break;
+            }
         }
         static void DayOneFirst(bool test)
         {
-            StreamReader reader = new StreamReader("day1.txt");
+            string path = "day1.txt";
+            if (test)
+                path = "day1_test.txt";
+            StreamReader reader = new StreamReader(path);
             string line = reader.ReadLine();
             int vyskyty = 0;
             int posledni = 90000000;
@@ -33,7 +70,10 @@ namespace AdventOfCode
         }
         static void DayOneSecond(bool test)
         {
-            StreamReader reader = new StreamReader("day1.txt");
+            string path = "day1.txt";
+            if (test)
+                path = "day1_test.txt";
+            StreamReader reader = new StreamReader(path);
             string line = reader.ReadLine();
             int lineCislo;
             int vyskyty = 0;
