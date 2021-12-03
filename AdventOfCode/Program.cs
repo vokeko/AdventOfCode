@@ -145,12 +145,71 @@ namespace AdventOfCode
 
         static void DayTwoFirst(bool test)
         {
+            string path = "day2.txt";
+            if (test)
+                path = "day2_test.txt";
+            StreamReader reader = new StreamReader(path);
+            long depth = 0;
+            long position = 0;
+            string[] splitLine;
+            string line = reader.ReadLine();
 
+            while (line != null)
+            {
+                splitLine = line.Split(" ");
+                switch (splitLine[0])
+                {
+                    case "forward":
+                        position += Convert.ToInt64(splitLine[1]);
+                        break;
+                    case "up":
+                        depth -= Convert.ToInt64(splitLine[1]);
+                        break;
+                    case "down":
+                        depth += Convert.ToInt64(splitLine[1]);
+                        break;
+                }
+                line = reader.ReadLine();
+            }
+            Console.WriteLine("Pozice: " + position);
+            Console.WriteLine("Hloubka: " + depth);
+            Console.WriteLine("Výsledek: " + (position * depth));
         }
 
         static void DayTwoSecond(bool test)
         {
+            string path = "day2.txt";
+            if (test)
+                path = "day2_test.txt";
+            StreamReader reader = new StreamReader(path);
+            long depth = 0;
+            long position = 0;
+            string[] splitLine;
+            long aim = 0;
+            string line = reader.ReadLine();
 
+            while (line != null)
+            {
+                splitLine = line.Split(" ");
+                switch (splitLine[0])
+                {
+                    case "forward":
+                        position += Convert.ToInt64(splitLine[1]);
+                        depth += aim * Convert.ToInt64(splitLine[1]);
+                        break;
+                    case "up":
+                        aim -= Convert.ToInt64(splitLine[1]);
+                        break;
+                    case "down":
+                        aim += Convert.ToInt64(splitLine[1]);
+                        break;
+                }
+                line = reader.ReadLine();
+            }
+            Console.WriteLine("Pozice: " + position);
+            Console.WriteLine("Hloubka: " + depth);
+            Console.WriteLine("Namíření: " + aim);
+            Console.WriteLine("Výsledek: " + (position * depth));
         }
 
         static void DayThreeFirst(bool test)
