@@ -264,7 +264,78 @@ namespace AdventOfCode
 
         static void DayThreeSecond(bool test)
         {
+            string path = "day3.txt";
+            if (test)
+                path = "day3_test.txt";
+            StreamReader reader = new StreamReader(path);
 
+            string readLine = reader.ReadLine();
+            List<string> lines = new List<string>();
+
+            while (readLine != null)
+            {
+                lines.Add(readLine);
+                readLine = reader.ReadLine();
+            }
+
+            int oxygen = DayThreeSecondGetRating(lines, true);
+            int scrubber = DayThreeSecondGetRating(lines, false);
+
+            Console.WriteLine("Kyslík: " + oxygen);
+            Console.WriteLine("Čistič: " + scrubber);
+            Console.WriteLine("Hodnocení podpory života: " + (oxygen * scrubber));
+        }
+        static int DayThreeSecondGetRating(List<string> data, bool biggerBool)
+        {
+            uint length = (uint)data[0].Length;
+            string ret = "";
+            char bigger = biggerBool ? '1' : '0';
+            HashSet<string> remove = new HashSet<string>();
+            for (int i = 0; i < length; i++)
+            {
+                int ones = 0;
+
+                for (int j = 0; j < data.Count; j++)
+                {
+                    if (data[j][i] == '1')
+                        ones++;
+                }
+
+                if (ones >= data.Count / 2)
+                {
+                    foreach (string dat in data)
+                    {
+                        if (dat[i] != bigger)
+                        {
+                            remove.Add(dat);
+                            if (data.Count <= (remove.Count + 1))
+                                break;
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (string dat in data)
+                    {
+                        if (dat[i] == bigger)
+                        {
+                            remove.Add(dat);
+                            if (data.Count <= (remove.Count + 1))
+                                break;
+                        }
+                    }
+                }
+            }
+            foreach(string dat in data)
+            {
+                if (!remove.Contains(dat))
+                {
+                    ret = dat;
+                    break;
+                }
+            }
+
+            return Convert.ToInt32(ret, 2);
         }
     }
 }
