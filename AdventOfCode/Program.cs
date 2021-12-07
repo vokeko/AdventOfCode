@@ -14,7 +14,7 @@ namespace AdventOfCode
 
             Console.WriteLine("Zadejte den (1-24)");
             uint number = Convert.ToUInt32(Console.ReadLine());
-            if (number > 0 && number < 4)
+            if (number > 0 && number < 5)
                 day = number;
 
             Console.WriteLine("Zadejte úkol (P pro první)");
@@ -47,6 +47,12 @@ namespace AdventOfCode
                         DayThreeFirst(test);
                     else
                         DayThreeSecond(test);
+                    break;
+                case 4:
+                    if (first)
+                        DayFourFirst(test);
+                    else
+                        DayFourSecond(test);
                     break;
             }
             Console.ReadKey();
@@ -263,6 +269,135 @@ namespace AdventOfCode
         }
 
         static void DayThreeSecond(bool test)
+        {
+
+        }
+
+        static void DayFourFirst(bool test)
+        {
+            string path = "day4.txt";
+            if (test)
+                path = "day4_test.txt";
+            StreamReader reader = new StreamReader(path);
+
+            int[] winningNumbers = Array.ConvertAll(reader.ReadLine().Split(','), int.Parse);
+            List<BingoBoard> boards = new List<BingoBoard>();
+            string line = reader.ReadLine();
+            BingoBoard board = null;
+
+            while (line != null)
+            {
+                if (line == "")
+                {
+                    if (board != null)
+                        boards.Add(board);
+                    board = new BingoBoard();
+                }
+                else
+                {
+                    List<Number> temporaryClassNumbers = new List<Number>();
+                    string temporaryLine = line.Replace("  ", " ");
+                    if (temporaryLine[0] == ' ')
+                        temporaryLine = temporaryLine.Remove(0, 1);
+
+                    foreach (int tempNumber in Array.ConvertAll(temporaryLine.Split(' '), int.Parse))
+                    {
+                        temporaryClassNumbers.Add(new Number(tempNumber));
+                    }
+                    board.Numbers.Add(temporaryClassNumbers);
+                }
+                line = reader.ReadLine();
+            }
+            boards.Add(board);
+
+            BingoBoard winningBoard = null;
+            int winningNumber = -1;
+
+            foreach (int currentNumber in winningNumbers)
+            {
+                //num = winningNumber
+                foreach (BingoBoard board1 in boards)
+                {
+                    //checks whether number is in any boards, if yes then it marks it
+                    foreach (List<Number> numberList in board1.Numbers)
+                    {
+                        if (numberList.Contains(new Number(currentNumber)))
+                        {
+                            foreach (Number number in numberList)
+                            {
+                                if (number.Value == currentNumber)
+                                    number.Marked = true;
+                            }
+                        }
+                    }
+                }
+
+                //If bingo, then break and copy board
+                foreach (BingoBoard board1 in boards)
+                {
+                    foreach (List<Number> numberList in board1.Numbers)
+                    {
+                        uint bingoLine = 0;
+                        foreach (Number number in numberList)
+                        {
+                            if (number.Marked == true)
+                                bingoLine++;
+                        }
+                        if (bingoLine == numberList.Count)
+                            winningBoard = board1;
+                    }
+
+                    for (int x = 0; x < board1.Numbers.Count; x++)
+                    {
+                        uint bingoColumn = 0;
+
+                        foreach (Number number in board1.Numbers[x])
+                        {
+                            if (number.Marked == true)
+                                bingoColumn++;
+                        }
+
+                        if (bingoColumn == board1.Numbers.Count)
+                            winningBoard = board1;
+                    }
+                }
+
+                if (winningBoard != null)
+                {
+                    winningNumber = currentNumber;
+                    break;
+                }
+
+            }
+            //count number from bingoboard
+            if (winningNumber >= 0)
+            {
+                Console.WriteLine("Vítězná deska: " + winningBoard);
+                Console.WriteLine("Vítězné číslo: " + winningNumber);
+
+                int total = 0;
+
+                foreach (List<Number> numberList in winningBoard.Numbers)
+                {
+                    foreach (Number number in numberList)
+                    {
+                        if (number.Marked == false)
+                        {
+                            total += number.Value;
+                        }
+                    }
+                }
+
+                Console.WriteLine("Výsledek: " + total);
+            }
+            else
+            {
+                Console.WriteLine("Nic nevyhrálo?!?");
+            }
+            Console.ReadKey();
+        }
+
+        static void DayFourSecond(bool test)
         {
 
         }
