@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AdventOfCode
 {
@@ -57,12 +58,16 @@ namespace AdventOfCode
                 case 6:
                     DaySix(test);
                     break;
+                case 7:
+                    DaySevenFirst(test);
+                    break;
                 default:
                     Console.WriteLine("Není vybrán hotový den");
                     break;
             }
             Console.ReadKey();
         }
+
         static void DayOneFirst(bool test)
         {
             string path = "day1.txt";
@@ -84,6 +89,7 @@ namespace AdventOfCode
             }
             Console.WriteLine(vyskyty);
         }
+
         static void DayOneSecond(bool test)
         {
             string path = "day1.txt";
@@ -439,6 +445,41 @@ namespace AdventOfCode
             }
             Console.WriteLine(string.Format("Za {0} dní je ryb:", days));
             Console.WriteLine(lanternFishList.Count);
+        }
+
+        static void DaySevenFirst(bool test)
+        {
+            string path = "day7.txt";
+            if (test)
+                path = "day7_test.txt";
+            StreamReader reader = new StreamReader(path);
+
+            int[] crabPositions = Array.ConvertAll(reader.ReadLine().Split(','), int.Parse);
+            int max = crabPositions.Max();
+            int min = crabPositions.Min();
+            List<int> fuelCosts = new List<int>();
+
+            for (int x = 0; x < max; x++)
+            {
+                int fuelCost = 0;
+                if (x < min)
+                    continue;
+
+                foreach (int crabPosition in crabPositions)
+                {
+                    fuelCost += Math.Abs(crabPosition - x);
+                }
+                fuelCosts.Add(fuelCost);
+            }
+
+            if (fuelCosts.Count > 0)
+            {
+                Console.WriteLine("Nejvýhodnější cena:" + fuelCosts.Min());
+            }
+            else
+            {
+                Console.WriteLine("Chyba");
+            }
         }
     }
 }
