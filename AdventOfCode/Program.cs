@@ -14,7 +14,7 @@ namespace AdventOfCode
 
             Console.WriteLine("Zadejte den (1-24)");
             uint number = Convert.ToUInt32(Console.ReadLine());
-            if (number > 0 && number < 5)
+            if (number > 0 && number < 8)
                 day = number;
 
             Console.WriteLine("Zadejte úkol (P pro první)");
@@ -53,6 +53,12 @@ namespace AdventOfCode
                         DayFourFirst(test);
                     else
                         DayFourSecond(test);
+                    break;
+                case 6:
+                    DaySix(test);
+                    break;
+                default:
+                    Console.WriteLine("Není vybrán hotový den");
                     break;
             }
             Console.ReadKey();
@@ -400,6 +406,39 @@ namespace AdventOfCode
         static void DayFourSecond(bool test)
         {
 
+        }
+
+        static void DaySix(bool test)
+        {
+            Console.WriteLine("Počet dnů?");
+            int days = Convert.ToInt32(Console.ReadLine());
+
+            string path = "day6.txt";
+            if (test)
+                path = "day6_test.txt";
+            StreamReader reader = new StreamReader(path);
+            List<Fish> lanternFishList = new List<Fish>();
+
+            foreach (int lanternFishNumber in Array.ConvertAll(reader.ReadLine().Split(','), int.Parse))
+            {
+                lanternFishList.Add(new Fish(lanternFishNumber));
+            }
+
+            for (int i = 0; i < days; i++)
+            {
+                List<Fish> fishChildren = new List<Fish>();
+
+                foreach (Fish lanternFish in lanternFishList)
+                {
+                    Fish fishChild = lanternFish.CountAge();
+                    if (fishChild != null)
+                        fishChildren.Add(fishChild);
+                }
+                if (fishChildren.Count > 0)
+                    lanternFishList.AddRange(fishChildren);
+            }
+            Console.WriteLine(string.Format("Za {0} dní je ryb:", days));
+            Console.WriteLine(lanternFishList.Count);
         }
     }
 }
