@@ -13,9 +13,9 @@ namespace AdventOfCode
             uint day = 1;
             bool first = false;
 
-            Console.WriteLine("Zadejte den (1-24)");
+            Console.WriteLine("Zadejte den (1-25)");
             uint number = Convert.ToUInt32(Console.ReadLine());
-            if (number > 0 && number < 8)
+            if (number > 0 && number <= 25)
                 day = number;
 
             Console.WriteLine("Zadejte úkol (P pro první)");
@@ -54,6 +54,9 @@ namespace AdventOfCode
                         DayFourFirst(test);
                     else
                         DayFourSecond(test);
+                    break;
+                case 5:
+                    DayFive(test, first);
                     break;
                 case 6:
                     DaySix(test);
@@ -414,6 +417,59 @@ namespace AdventOfCode
 
         }
 
+        static void DayFive(bool test, bool first)
+        {
+            string path = "day5.txt";
+            if (test)
+                path = "day5_test.txt";
+            StreamReader reader = new StreamReader(path);
+
+            string line = reader.ReadLine();
+            Dictionary<int[], int[]> fromTo = new Dictionary<int[], int[]>();
+            int[,] board = new int[1000, 1000];
+            int overlaps = 0;
+
+            while (line != null)
+            {
+                string[] tempLine = line.Replace(" -> ", "-").Split('-');
+                string[] tempFirst = tempLine[0].Split(',');
+                string[] tempSecond = tempLine[1].Split(',');
+
+                if (first && (tempFirst[0] == tempSecond[0] || tempFirst[1] == tempSecond[1]))
+                     fromTo.Add(new int[] { Convert.ToInt32(tempFirst[0]), Convert.ToInt32(tempFirst[1]) }, new int[] { Convert.ToInt32(tempSecond[0]), Convert.ToInt32(tempSecond[1]) });
+                //tahle linka je rozdíl solution mezi 5_1 a 5_2
+                line = reader.ReadLine();
+            }
+
+            foreach (KeyValuePair<int[], int[]> pair in fromTo)
+            {
+                List<int[]> directions = convertDirections(pair);
+
+                foreach (int[] moveHere in directions)
+                {
+                    board[moveHere[0], moveHere[1]]++;
+                }
+            }
+
+            foreach (int value in board)
+            {
+                if (value > 1)
+                    overlaps++;
+
+            }
+            //for (int y = 0; y < 20; y++)
+            //{
+            //    for (int x = 0; x < 20; x++)
+            //    {
+            //        Console.Write(board[x, y]);
+            //    }
+            //    Console.WriteLine("");
+            //}
+            //vypsání překrytí
+
+            Console.WriteLine("Překrytí: " + overlaps);
+        }
+
         static void DaySix(bool test)
         {
             Console.WriteLine("Počet dnů?");
@@ -480,6 +536,30 @@ namespace AdventOfCode
             {
                 Console.WriteLine("Chyba");
             }
+        }
+
+        static List<int[]> convertDirections(KeyValuePair<int[], int[]> pair)
+        {
+            List<int[]> convertedDirections = new List<int[]>();
+            int x = pair.Key[0];
+            int y = pair.Key[1];
+            convertedDirections.Add(new int[2] { x, y });
+
+            while (x != pair.Value[0] || y != pair.Value[1])
+            {
+                if (x < pair.Value[0])
+                    x++;
+                if (x > pair.Value[0])
+                    x--;
+                if (y < pair.Value[1])
+                    y++;
+                if (y > pair.Value[1])
+                    y--;
+
+                convertedDirections.Add(new int[2] { x, y });
+            }
+
+            return convertedDirections;
         }
     }
 }
