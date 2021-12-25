@@ -47,13 +47,13 @@ namespace AdventOfCode
                     if (first)
                         DayThreeFirst(test);
                     else
-                        DayThreeSecond(test);
+                        DayThreeSecond();
                     break;
                 case 4:
                     if (first)
                         DayFourFirst(test);
                     else
-                        DayFourSecond(test);
+                        DayFourSecond();
                     break;
                 case 5:
                     DayFive(test, first);
@@ -65,10 +65,10 @@ namespace AdventOfCode
                     DaySevenFirst(test);
                     break;
                 case 11:
-                    if (first)
-                        DayEleven(test, true);
-                    else
-                        DayEleven(test, false);
+                    DayEleven(first);
+                    break;
+                case 14:
+                    DayFourteen(test);
                     break;
                 default:
                     Console.WriteLine("Není vybrán hotový den");
@@ -289,7 +289,7 @@ namespace AdventOfCode
             Console.WriteLine("Spotřeba energie: " + (gammaInt * epsilonInt));
         }
 
-        static void DayThreeSecond(bool test)
+        static void DayThreeSecond()
         {
 
         }
@@ -418,7 +418,7 @@ namespace AdventOfCode
             Console.ReadKey();
         }
 
-        static void DayFourSecond(bool test)
+        static void DayFourSecond()
         {
 
         }
@@ -544,7 +544,7 @@ namespace AdventOfCode
             }
         }
 
-        static void DayEleven(bool test, bool first)
+        static void DayEleven(bool first)
         {
             int steps = 90000;
 
@@ -555,7 +555,7 @@ namespace AdventOfCode
             }
 
             int flashes = 0;
-            StreamReader reader1 = new StreamReader("input6.txt");
+            StreamReader reader1 = new StreamReader("day11.txt");
             string line = reader1.ReadLine();
             GlowSquid[,] board = new GlowSquid[10, 10];
             int y = 0;
@@ -621,6 +621,62 @@ namespace AdventOfCode
             Console.WriteLine("První synchronizace: " + steps);
         }
 
+        static void DayFourteen(bool test)
+        {
+            string path = "day14.txt";
+            if (test)
+                path = "day14_test.txt";
+
+            StreamReader reader = new StreamReader(path);
+            string template = reader.ReadLine();
+            reader.ReadLine();
+            string line = reader.ReadLine();
+
+            Console.WriteLine("Počet kroků? 10 pro part 1 40 part 2");
+            int steps = Convert.ToInt32(Console.ReadLine());
+
+            Dictionary<string, string> rules = new Dictionary<string, string>();
+            Dictionary<char, int> elementRarity = new Dictionary<char, int>();
+
+            while (line != null)
+            {
+                string[] tempLine = line.Replace(" -> ", "-").Split('-');
+                rules.Add(tempLine[0], tempLine[1]);
+                line = reader.ReadLine();
+            }
+
+            foreach (char c in template)
+            {
+                elementRarity = addToDictionary(c, elementRarity);
+            }
+
+            for (int i = 0; i < steps; i++)
+            {
+                for (int j = 0; j < template.Length - 1; j++)
+                {
+                    string substring = template.Substring(j, 2);
+                    string insertElement = rules[substring];
+                    if (insertElement != "")
+                    {
+                        j++;
+                        template = template.Insert(j, insertElement);
+                        elementRarity = addToDictionary(Convert.ToChar(insertElement), elementRarity);
+                    }
+                }
+            }
+            int min = elementRarity.Values.Min();
+            int max = elementRarity.Values.Max();
+
+            Console.WriteLine(template);
+            Console.WriteLine();
+            Console.WriteLine("Délka: " + template.Length);
+            Console.WriteLine("Max: " + max);
+            Console.WriteLine("Min: " + min);
+            Console.WriteLine("Výsledek: " + (max - min));
+
+            Console.ReadKey();
+        }
+
         #region special functions
 
         static List<int[]> convertDirections(KeyValuePair<int[], int[]> pair)
@@ -680,6 +736,15 @@ namespace AdventOfCode
                 }
             }
             return new object[] { board, flashes };
+        }
+
+        static Dictionary<char, int> addToDictionary(char c, Dictionary<char, int> dictionary)
+        {
+            if (dictionary.ContainsKey(c))
+                dictionary[c]++;
+            else
+                dictionary.Add(c, 1);
+            return dictionary;
         }
 
         #endregion
