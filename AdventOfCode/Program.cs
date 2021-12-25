@@ -64,6 +64,12 @@ namespace AdventOfCode
                 case 7:
                     DaySevenFirst(test);
                     break;
+                case 11:
+                    if (first)
+                        DayEleven(test, true);
+                    else
+                        DayEleven(test, false);
+                    break;
                 default:
                     Console.WriteLine("Není vybrán hotový den");
                     break;
@@ -538,6 +544,85 @@ namespace AdventOfCode
             }
         }
 
+        static void DayEleven(bool test, bool first)
+        {
+            int steps = 90000;
+
+            if (first)
+            {
+                Console.WriteLine("Zadejte počet kroků: ");
+                steps = Convert.ToInt32(Console.ReadLine());
+            }
+
+            int flashes = 0;
+            StreamReader reader1 = new StreamReader("input6.txt");
+            string line = reader1.ReadLine();
+            GlowSquid[,] board = new GlowSquid[10, 10];
+            int y = 0;
+            while (line != null)
+            {
+                int x = 0;
+                foreach (char c in line)
+                {
+                    board[x, y] = new GlowSquid(x, y, int.Parse(Convert.ToString(c)));
+                    x++;
+                }
+                y++;
+                line = reader1.ReadLine();
+            }
+
+            for (int currentStep = 0; currentStep < steps; currentStep++)
+            {
+                foreach (GlowSquid squid in board)
+                {
+                    squid.AddOne(false);
+                }
+
+                foreach (GlowSquid squid in board)
+                {
+                    if (squid.Energy >= 10)
+                    {
+                        squid.AddOne(true);
+                        flashes++;
+                        var temp = flashThese(squid.X, squid.Y, board, flashes);
+                        board = (GlowSquid[,])temp[0];
+                        flashes = (int)temp[1];
+                    }
+                }
+                bool synchro = true;
+                foreach (GlowSquid squid in board)
+                {
+                    if (squid.Energy != 0)
+                    {
+                        synchro = false;
+                        break;
+                    }
+
+                }
+                if (synchro)
+                {
+                    steps = currentStep + 1;
+                    break;
+                }
+
+            }
+
+            for (int y2 = 0; y2 < 10; y2++)
+            {
+                for (int x2 = 0; x2 < 10; x2++)
+                {
+                    Console.Write(board[x2, y2].Energy);
+                }
+                Console.WriteLine("");
+            }
+
+            Console.WriteLine("");
+            Console.WriteLine("Zablísknutí: " + flashes);
+            Console.WriteLine("První synchronizace: " + steps);
+        }
+
+        #region special functions
+
         static List<int[]> convertDirections(KeyValuePair<int[], int[]> pair)
         {
             List<int[]> convertedDirections = new List<int[]>();
@@ -561,5 +646,72 @@ namespace AdventOfCode
 
             return convertedDirections;
         }
+
+        static List<int[]> calculateSpaces(int x, int y, GlowSquid[,] board)
+        {
+            List<int[]> validSpaces = new List<int[]>();
+
+            for (int _y = y - 1; _y < y + 2; _y++)
+            {
+
+                for (int _x = x - 1; _x < x + 2; _x++)
+                {
+                    if ((_x != x || _y != y) && (_y >= 0 && _x >= 0 && _x < 10 && _y < 10))
+                    {
+                        validSpaces.Add(new int[] { _x, _y });
+                    }
+                }
+            }
+
+            return validSpaces;
+        }
+
+        static object[] flashThese(int x, int y, GlowSquid[,] board, int flashes)
+        {
+            List<int[]> spaces = calculateSpaces(x, y, board);
+            foreach (int[] space in spaces)
+            {
+                if (board[space[0], space[1]].AddOne(true))
+                {
+                    flashes++;
+                    object[] temp = flashThese(space[0], space[1], board, flashes);
+                    board = (GlowSquid[,])temp[0];
+                    flashes = (int)temp[1];
+                }
+            }
+            return new object[] { board, flashes };
+        }
+
+        #endregion
     }
+
+    #region classes
+    class GlowSquid
+    {
+        public int X { get; }
+        public int Y { get; }
+        public int Energy { get; private set; }
+        public GlowSquid(int _x, int _y, int _energy)
+        {
+            X = _x;
+            Y = _y;
+            Energy = _energy;
+        }
+        public bool AddOne(bool flashed)
+        {
+            if (flashed && Energy == 0) return false;
+
+            Energy++;
+
+            if (flashed == false) return false;
+
+            if (Energy >= 10)
+            {
+                Energy = 0;
+                return true;
+            }
+            return false;
+        }
+    }
+    #endregion
 }
